@@ -99,5 +99,11 @@
             <groupId>org.mvel</groupId>
             <artifactId>mvel2</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <!-- CBW: move to switchyard-parent <dM> section! -->
+            <version>2.4.1</version>
+        </dependency>
     </dependencies>
 </project>
