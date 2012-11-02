@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2011 Red Hat Inc. and/or its affiliates and other contributors
+ * Copyright 2012 Red Hat Inc. and/or its affiliates and other contributors
  * as indicated by the @authors tag. All rights reserved.
  * See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -30,9 +30,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
- * Tests Google Protocol Buffer Transformer
+ * Tests Google Protocol Buffer Transformers.
  *
- * @author Chris Wash <a href="mailto:chris.wash@gmail.com">chris.wash@gmail.com</a>
+ * @author Chris Wash &lt;<a href="mailto:chris.wash@gmail.com">chris.wash@gmail.com</a>&gt;
  */
 public class ProtobufTransformerTest extends AbstractTransformerTestCase {
 
