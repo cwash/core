@@ -27,6 +27,7 @@ import org.switchyard.config.model.transform.TransformModel;
 import org.switchyard.transform.config.model.JAXBTransformModel;
 import org.switchyard.transform.config.model.JSONTransformModel;
 import org.switchyard.transform.config.model.JavaTransformModel;
+import org.switchyard.transform.config.model.ProtobufTransformModel;
 import org.switchyard.transform.config.model.SmooksTransformModel;
 import org.switchyard.transform.config.model.XsltTransformModel;
 
@@ -37,11 +38,12 @@ import org.switchyard.transform.config.model.XsltTransformModel;
  */
 public class V1TransformMarshaller extends BaseMarshaller {
 
-    private static final String TRANSFORM_JAVA = TransformModel.TRANSFORM + "." + JavaTransformModel.JAVA;
-    private static final String TRANSFORM_SMOOKS = TransformModel.TRANSFORM + "." + SmooksTransformModel.SMOOKS;
-    private static final String TRANSFORM_JSON = TransformModel.TRANSFORM + "." + JSONTransformModel.JSON;
-    private static final String TRANSFORM_XSLT = TransformModel.TRANSFORM + "." + XsltTransformModel.XSLT;
-    private static final String TRANSFORM_JAXB = TransformModel.TRANSFORM + "." + JAXBTransformModel.JAXB;
+    private static final String TRANSFORM_JAVA     = TransformModel.TRANSFORM + "." + JavaTransformModel.JAVA;
+    private static final String TRANSFORM_SMOOKS   = TransformModel.TRANSFORM + "." + SmooksTransformModel.SMOOKS;
+    private static final String TRANSFORM_JSON     = TransformModel.TRANSFORM + "." + JSONTransformModel.JSON;
+    private static final String TRANSFORM_XSLT     = TransformModel.TRANSFORM + "." + XsltTransformModel.XSLT;
+    private static final String TRANSFORM_JAXB     = TransformModel.TRANSFORM + "." + JAXBTransformModel.JAXB;
+    private static final String TRANSFORM_PROTOBUF = TransformModel.TRANSFORM + "." + ProtobufTransformModel.PROTOBUF;
 
     /**
      * Constructs a new V1TransformMarshaller with the specified Descriptor.
@@ -69,6 +71,8 @@ public class V1TransformMarshaller extends BaseMarshaller {
             return new V1XsltTransformModel(config, desc);
         } else if (name.equals(TRANSFORM_JAXB)) {
             return new V1JAXBTransformModel(config, desc);
+        } else if (name.equals(TRANSFORM_PROTOBUF)) {
+            return new V1ProtobufTransformModel(config, desc);
         }
 
         return null;

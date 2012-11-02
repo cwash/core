@@ -1,0 +1,5 @@
+<switchyard xmlns="urn:switchyard-config:switchyard:1.0">
+    <transforms>
+        <transform.protobuf xmlns="urn:switchyard-config:transform:1.0" from="java:org.switchyard.transform.protobuf.internal.AddressBookProtos$Person" to="B"/>
+    </transforms>
+</switchyard>
