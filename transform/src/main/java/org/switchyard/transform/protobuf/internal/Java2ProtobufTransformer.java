@@ -23,6 +23,9 @@ import org.switchyard.Message;
 import org.switchyard.exception.SwitchYardException;
 import org.switchyard.transform.BaseTransformer;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 /**
  * Java to Protobuf Transformer.
  *
@@ -46,8 +49,16 @@ public class Java2ProtobufTransformer extends BaseTransformer<Message, Message> 
              throw new SwitchYardException("Cannot marshall for type '" + getFrom() + "' because it does not appear to be a com.google.protobuf.Message.");
         }
 
-        com.google.protobuf.Message protobufMessage = (com.google.protobuf.Message) message.getContent();
-        byte[] protobufBytes = protobufMessage.toByteArray();
+        com.google.protobuf.Message protobufMessage = message.getContent(com.google.protobuf.Message.class);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        try {
+            protobufMessage.writeTo(outputStream);
+        } catch (IOException e) {
+            throw new SwitchYardException("Problem marshalling for type '" + getFrom() + "'.", e);
+        }
+
+        byte[] protobufBytes = outputStream.toByteArray();
         message.setContent(protobufBytes);
 
         return message;

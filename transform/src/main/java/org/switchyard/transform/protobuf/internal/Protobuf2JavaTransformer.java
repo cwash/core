@@ -19,11 +19,12 @@
 
 package org.switchyard.transform.protobuf.internal;
 
-import com.google.protobuf.InvalidProtocolBufferException;
 import org.switchyard.Message;
 import org.switchyard.exception.SwitchYardException;
 import org.switchyard.transform.BaseTransformer;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 
 /**
@@ -71,12 +72,12 @@ public class Protobuf2JavaTransformer<T extends com.google.protobuf.Message> ext
     @Override
     public Message transform(Message message) {
 
-        byte[] protobufBytes = (byte[]) message.getContent();
+        InputStream protobufBytes = message.getContent(InputStream.class);
         com.google.protobuf.Message.Builder protobufBuilder = null;
 
         try {
             protobufBuilder = _exampleInstance.newBuilderForType().mergeFrom(protobufBytes);
-        } catch (InvalidProtocolBufferException e) {
+        } catch (IOException e) {
             throw new SwitchYardException("Cannot unmarshall for type '" + getFrom() + "'.", e);
         }
 

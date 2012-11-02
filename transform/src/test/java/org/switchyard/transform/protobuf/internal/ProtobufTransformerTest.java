@@ -28,11 +28,12 @@ import org.switchyard.config.model.transform.TransformModel;
 import org.switchyard.config.model.transform.TransformsModel;
 import org.switchyard.internal.DefaultMessage;
 import org.switchyard.internal.transform.BaseTransformerRegistry;
+import org.switchyard.metadata.java.JavaService;
 import org.switchyard.transform.Transformer;
-import org.switchyard.transform.TransformerRegistry;
 import org.switchyard.transform.TransformerRegistryLoader;
 import org.switchyard.transform.config.model.ProtobufTransformModel;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -48,11 +49,12 @@ import static org.junit.Assert.assertThat;
  */
 public class ProtobufTransformerTest {
 
-    private TransformerRegistry xformReg;
+    private BaseTransformerRegistry registry;
 
     public ProtobufTransformerTest() {
-        xformReg = new BaseTransformerRegistry();
-        new TransformerRegistryLoader(xformReg).loadOOTBTransforms();
+        registry = new BaseTransformerRegistry();
+        new TransformerRegistryLoader(registry).loadOOTBTransforms();
+        Assert.assertNotNull(registry.getTransformer(JavaService.toMessageType(InputStream.class), JavaService.toMessageType(byte[].class)));
     }
 
     private com.google.protobuf.Message createNewDefaultPersonInstance() {
@@ -82,7 +84,7 @@ public class ProtobufTransformerTest {
 
     private DefaultMessage newMessage(Object content) {
         DefaultMessage message = new DefaultMessage().setContent(content);
-        message.setTransformerRegistry(xformReg);
+        message.setTransformerRegistry(registry);
         return message;
     }
 
@@ -109,7 +111,8 @@ public class ProtobufTransformerTest {
 
         Transformer<Message, Message> protobuf2JavaTransformer = new Protobuf2JavaTransformer<AddressBookProtos.Person>(AddressBookProtos.Person.getDefaultInstance());
 
-        byte[] protobufContent = createNewDefaultPersonInstance().toByteArray();
+        byte[] protobufBytes = createNewDefaultPersonInstance().toByteArray();
+        InputStream protobufContent = new ByteArrayInputStream(protobufBytes);
         DefaultMessage protobufMessage = newMessage(protobufContent);
 
         Message javaMessage = protobuf2JavaTransformer.transform(protobufMessage);
@@ -124,8 +127,8 @@ public class ProtobufTransformerTest {
 
         Transformer<Message, Message> protobuf2JavaTransformer = new Protobuf2JavaTransformer<AddressBookProtos.Person>(AddressBookProtos.Person.class);
 
-
-        byte[] protobufContent = createNewDefaultPersonInstance().toByteArray();
+        byte[] protobufBytes = createNewDefaultPersonInstance().toByteArray();
+        InputStream protobufContent = new ByteArrayInputStream(protobufBytes);
         DefaultMessage protobufMessage = newMessage(protobufContent);
 
         Message javaMessage = protobuf2JavaTransformer.transform(protobufMessage);
@@ -138,11 +141,11 @@ public class ProtobufTransformerTest {
     @Test
     public void shouldTransformToProtobuf_withConfiguration() throws Exception {
 
-        Transformer java2ProtobufTransformer = getTransformer("switchyard-config-01.xml");
+        Transformer<Message, Message> java2ProtobufTransformer = getTransformer("switchyard-config-01.xml");
 
         Message javaMessage = newMessage(createNewDefaultPersonInstance());
 
-        Message protobufMessage = (Message) java2ProtobufTransformer.transform(javaMessage);
+        Message protobufMessage = java2ProtobufTransformer.transform(javaMessage);
         byte[] protobufContent = protobufMessage.getContent(byte[].class);
 
         AddressBookProtos.Person deserializedTransformedInstance = AddressBookProtos.Person.parseFrom(protobufContent);
@@ -153,12 +156,13 @@ public class ProtobufTransformerTest {
     @Test
     public void shouldTransformFromProtobufByClass_withConfiguration() throws Exception {
 
-        Transformer protobuf2JavaTransformer = getTransformer("switchyard-config-02.xml");
+        Transformer<Message, Message> protobuf2JavaTransformer = getTransformer("switchyard-config-02.xml");
 
-        byte[] protobufContent = createNewDefaultPersonInstance().toByteArray();
-        DefaultMessage protobufMessage = newMessage(protobufContent);
+        byte[] protobufBytes = createNewDefaultPersonInstance().toByteArray();
+        InputStream protobufContent = new ByteArrayInputStream(protobufBytes);
+        Message protobufMessage = newMessage(protobufContent);
 
-        Message javaMessage = (Message) protobuf2JavaTransformer.transform(protobufMessage);
+        Message javaMessage = protobuf2JavaTransformer.transform(protobufMessage);
 
         AddressBookProtos.Person transformedInstance = (AddressBookProtos.Person) javaMessage.getContent();
         assertInstanceIsDefaultPerson(transformedInstance);
@@ -186,7 +190,7 @@ public class ProtobufTransformerTest {
 
         Transformer transformer = new ProtobufTransformFactory().newTransformer(protobufTransformModel);
 
-        if (!(transformer instanceof Protobuf2JavaTransformer ||transformer instanceof Java2ProtobufTransformer)) {
+        if (!(transformer instanceof Protobuf2JavaTransformer || transformer instanceof Java2ProtobufTransformer)) {
             Assert.fail("Not an instance of a ProtobufTransformer.");
         }
 
